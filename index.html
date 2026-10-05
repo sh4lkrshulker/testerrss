@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f5ef">
+    <meta name="description" content="Демонстрационный сайт для работы с базой данных заявок через Supabase.">
+    <title>Реестр заявок</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="./" aria-label="Реестр, главная">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M7 9.5 16 5l9 4.5v13L16 27l-9-4.5v-13Z" stroke="currentColor" stroke-width="2"/><path d="m7.5 9.7 8.5 4.5 8.5-4.5M16 14.5V26" stroke="currentColor" stroke-width="2"/></svg>
+          </span>
+          <span>реестр<span class="brand-period">.</span></span>
+        </a>
+
+        <div class="sidebar-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+        <nav aria-label="Основная навигация">
+          <a class="nav-link nav-link-active" href="#requests" aria-current="page">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 4.5h12v11H4zM7 8h6M7 11h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Заявки
+            <span class="nav-count" id="nav-count">—</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <span class="connection-dot" id="connection-dot"></span>
+          <span id="connection-label">Проверяем соединение</span>
+        </div>
+      </aside>
+
+      <main class="main-content" id="requests">
+        <header class="topbar">
+          <div class="breadcrumbs">Рабочее пространство <span>/</span> Заявки</div>
+          <div class="topbar-right"><span class="live-dot"></span> Облачная база</div>
+        </header>
+
+        <section class="page-heading" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">ОБЩИЙ РЕЕСТР <span class="eyebrow-line"></span></p>
+            <h1 id="page-title">Заявки<span class="title-period">.</span></h1>
+            <p class="page-description">Все обращения команды в одном месте.</p>
+          </div>
+          <button class="button button-primary" id="create-button" type="button" disabled title="Сначала подключите базу данных">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Новая заявка
+          </button>
+        </section>
+
+        <section class="summary-strip" aria-label="Сводка">
+          <div class="summary-item"><span class="summary-label">ВСЕГО ЗАЯВОК</span><strong id="total-count">—</strong></div>
+          <div class="summary-divider" aria-hidden="true"></div>
+          <div class="summary-item"><span class="summary-label">В РАБОТЕ</span><strong id="progress-count">—</strong></div>
+          <div class="summary-divider" aria-hidden="true"></div>
+          <div class="summary-item"><span class="summary-label">ЗАВЕРШЕНО</span><strong id="done-count">—</strong></div>
+          <div class="summary-note"><span class="summary-note-mark"></span> Данные обновляются из базы</div>
+        </section>
+
+        <section class="list-section" aria-label="Список заявок">
+          <div class="list-toolbar">
+            <div class="filter-tabs" role="group" aria-label="Фильтр по статусу">
+              <button class="filter-tab is-selected" type="button" data-filter="all" aria-pressed="true">Все <span id="filter-all-count">0</span></button>
+              <button class="filter-tab" type="button" data-filter="new" aria-pressed="false">Новые</button>
+              <button class="filter-tab" type="button" data-filter="in_progress" aria-pressed="false">В работе</button>
+              <button class="filter-tab" type="button" data-filter="done" aria-pressed="false">Завершённые</button>
+            </div>
+            <label class="search-box">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.3" stroke="currentColor" stroke-width="1.5"/><path d="m13 13 3.7 3.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input id="search-input" type="search" placeholder="Поиск заявок" autocomplete="off">
+              <kbd>/</kbd>
+            </label>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" class="number-column">№</th>
+                  <th scope="col">НАЗВАНИЕ</th>
+                  <th scope="col">КАТЕГОРИЯ</th>
+                  <th scope="col">ДАТА</th>
+                  <th scope="col">СТАТУС</th>
+                  <th scope="col"><span class="visually-hidden">Действия</span></th>
+                </tr>
+              </thead>
+              <tbody id="request-rows">
+                <tr><td colspan="6" class="table-message">Подключаемся к базе данных…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer"><span id="results-label">Загрузка записей</span><button class="refresh-button" id="refresh-button" type="button" title="Обновить список" aria-label="Обновить список"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16 9a6 6 0 0 0-10.8-3L4 8m0 0V4m0 4h4m-4 3a6 6 0 0 0 10.8 3L16 12m0 0v4m0-4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </section>
+        <footer class="page-footer"><span>РЕЕСТР ЗАЯВОК</span><span>СОХРАНЕНО В SUPABASE</span></footer>
+      </main>
+    </div>
+
+    <dialog class="request-dialog" id="request-dialog" aria-labelledby="dialog-title">
+      <form id="request-form">
+        <div class="dialog-heading">
+          <div><p class="eyebrow">КАРТОЧКА ЗАЯВКИ</p><h2 id="dialog-title">Новая заявка</h2></div>
+          <button class="icon-button" id="close-dialog" type="button" aria-label="Закрыть"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        </div>
+        <input id="request-id" type="hidden">
+        <label class="form-field">Название<input id="request-title" name="title" type="text" maxlength="120" placeholder="Например, подготовить отчёт" required></label>
+        <label class="form-field">Категория<input id="request-category" name="category" type="text" maxlength="60" placeholder="Например, Документы" required></label>
+        <label class="form-field">Статус<select id="request-status" name="status"><option value="new">Новая</option><option value="in_progress">В работе</option><option value="done">Завершена</option></select></label>
+        <p class="dialog-error" id="dialog-error" role="alert" hidden></p>
+        <div class="dialog-actions"><button class="button button-quiet" id="cancel-dialog" type="button">Отмена</button><button class="button button-primary" id="save-button" type="submit">Сохранить</button></div>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
